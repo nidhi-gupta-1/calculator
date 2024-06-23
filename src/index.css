@@ -1,15 +1,78 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
-
-* {
-  margin: 0;
-  padding: 0;
-  font-family: "Montserrat", sans-serif;
+.calculator {
+  width: 300px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-body {
-  height: 100vh;
+.display {
+  width: 100%;
+  text-align: right;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.display input[type="text"] {
+  width: 90%;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: right;
+  border: 1px solid;
+  margin: 1rem;
+  border: none;
+}
+
+.keys {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #13011b;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.keys button {
+  width: 20%;
+  padding: 14px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  margin-bottom: 10px;
+  margin-inline-end: 1px;
+}
+
+.keys button:hover {
+  background-color: #ccc;
+}
+
+.keys button:active {
+  background-color: #aaa;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+ .calculator {
+    width: 200px;
+  }
+ .display {
+    font-size: 18px;
+  }
+ .keys button {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+ .calculator {
+    width: 150px;
+  }
+ .display {
+    font-size: 14px;
+  }
+ .keys button {
+    font-size: 12px;
+  }
 }
