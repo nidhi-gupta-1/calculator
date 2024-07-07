@@ -1,81 +1,140 @@
-import React, { useState } from 'react';
+import React, { useState } from "react"; 
+import * as math from "mathjs"; 
 
-function App() {
-  const [input, setInput] = useState('');
-  const [result, setResult] = useState('');
-  const [operator, setOperator] = useState('');
-  const [prevInput, setPrevInput] = useState('');
+function App() { 
+	const [expression, setExpression] = useState(""); 
+	const [screenVal, setScreenVal] = useState(""); 
+	const [customVariables, setCustomVariables] = useState({}); 
+	const [mode, setMode] = useState("rad"); 
 
-  const handleInput = (e) => {
-    setResult('')
-    const value = e.target.value;
-    setInput(input + value);
-  };
+	function handleChange(e) { 
+		setExpression(e.target.value); 
+	} 
 
-  const handleOperator = (e) => {
-    const value = e.target.value;
-    setOperator(value);
-    setPrevInput(result !== '' ? result : input);
-    setInput('');
-  };
+	function handleClick(input) { 
+		setExpression((prevExpression) => prevExpression + input); 
+	} 
 
-  const handleEqual = () => {
-    let result = '';
-    switch (operator) {
-      case '+':
-        result = parseFloat(prevInput) + parseFloat(input);
-        break;
-      case '-':
-        result = parseFloat(prevInput) - parseFloat(input);
-        break;
-      case '*':
-        result = parseFloat(prevInput) * parseFloat(input);
-        break;
-      case '/':
-        result = parseFloat(prevInput) / parseFloat(input);
-        break;
-      default:
-        result = 'Error';
-    }
-    setResult(result);
-    setInput('');
-    setPrevInput('');
-    setOperator('');
-  };
+	function calculate() { 
+		try { 
+			const allVariables = { 
+				...customVariables, 
+				pi: Math.PI, 
+				e: Math.E, 
+				// Add factorial function 
+				fact: math.factorial, 
+				sin: mode === "rad" ? Math.sin : math.sin, 
+				cos: mode === "rad" ? Math.cos : math.cos, 
+				tan: mode === "rad" ? Math.tan : math.tan, 
+				asin: mode === "rad" ? Math.asin : math.asin, 
+				acos: mode === "rad" ? Math.acos : math.acos, 
+				atan: mode === "rad" ? Math.atan : math.atan, 
+			}; 
 
-  const handleClear = () => {
-    setInput('');
-    setResult('');
-    setPrevInput('');
-    setOperator('');
-  };
+			const result = math.evaluate(expression, allVariables); 
+			if (typeof result === "number" && !isNaN(result)) { 
+				setScreenVal(Number(result).toFixed(4)); 
+			} else { 
+				setScreenVal("Error: Invalid expression"); 
+			} 
+		} catch (error) { 
+			setScreenVal("Error: Invalid expression"); 
+		} 
+	} 
 
-  return (
-    <div className="calculator">
-      <div className="display">
-        <input type="text" value={result !== '' ? result : input} readOnly />
-      </div>
-      <div className="keys">
-        <button value="7" onClick={handleInput}>7</button>
-        <button value="8" onClick={handleInput}>8</button>
-        <button value="9" onClick={handleInput}>9</button>
-        <button value="/" onClick={handleOperator}>/</button>
-        <button value="4" onClick={handleInput}>4</button>
-        <button value="5" onClick={handleInput}>5</button>
-        <button value="6" onClick={handleInput}>6</button>
-        <button value="*" onClick={handleOperator}>*</button>
-        <button value="1" onClick={handleInput}>1</button>
-        <button value="2" onClick={handleInput}>2</button>
-        <button value="3" onClick={handleInput}>3</button>
-        <button value="-" onClick={handleOperator}>-</button>
-        <button value="0" onClick={handleInput}>0</button>
-        <button value="." onClick={handleInput}>.</button>
-        <button value="=" onClick={handleEqual}>=</button>
-        <button value="+" onClick={handleOperator}>+</button>
-        <button value="C" onClick={handleClear}>C</button>
-      </div>
-    </div>
-  );
-}
+	function clearScreen() { 
+		setExpression(""); 
+		setScreenVal(""); 
+	} 
+
+	function backspace() { 
+		const newExpression = expression.slice(0, -1); 
+		setExpression(newExpression); 
+	} 
+
+	function toggleMode() { 
+		setMode(mode === "rad" ? "deg" : "rad"); 
+	} 
+
+	return ( 
+		<> 
+			<div className="App"> 
+				<div className="calc-body"> 
+					<h1>Advanced Calculator</h1> 
+					<div className="input-section"> 
+						<input 
+							className="screen"
+							type="text"
+							value={expression} 
+							onChange={handleChange} 
+						/> 
+						<div className="output">Output: {screenVal}</div> 
+					</div> 
+					<div className="button-section"> 
+						<div className="numeric-pad"> 
+							{["1", "2", "3", "4", "5", 
+								"6", "7", "8", "9", "0"].map( 
+									(input) => ( 
+										<button key={input} 
+											onClick={() => 
+												handleClick(input)}> 
+											{input} 
+										</button> 
+									) 
+								)} 
+							<button onClick={() => 
+								handleClick(".")}>,</button> 
+						</div> 
+						<div className="operators"> 
+							{[ 
+								"+", 
+								"-", 
+								"*", 
+								"/", 
+								"^", 
+								"sqrt(", 
+								"sin(", 
+								"cos(", 
+								"tan(", 
+								"cbrt(", 
+								"asin(", 
+								"acos(", 
+								"atan(", 
+								"(", 
+								")", 
+							].map((input) => ( 
+								<button key={input} 
+									onClick={() => 
+										handleClick(input)}> 
+									{input} 
+								</button> 
+							))} 
+
+							<button onClick={() => 
+								handleClick("pi")}>Pi</button> 
+							<button onClick={() => 
+								handleClick("fact(")}>Factorial</button> 
+						</div> 
+						<div className="control-buttons"> 
+							<button className="clear-button"
+								onClick={clearScreen}> 
+								C 
+							</button> 
+							<button className="equals-button"
+								onClick={calculate}> 
+								= 
+							</button> 
+							<button className="backspace-button"
+								onClick={backspace}> 
+								del 
+							</button> 
+						</div> 
+					</div> 
+				</div> 
+				<div className="variables"></div> 
+			</div> 
+		</> 
+	); 
+} 
 
 export default App;
